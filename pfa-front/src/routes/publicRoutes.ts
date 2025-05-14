@@ -1,3 +1,8 @@
-import LandingPage from "../pages/landingPage";
+import { ROUTES } from "./routes";
+import { lazy } from "react";
 
-export const publicRoutes = [{ path: '/', component: LandingPage }];
+const LandingPage = lazy(() => import("../pages/LandingPage"));
+
+export const publicRoutes = [
+  { path: ROUTES.LandingPage, component: LandingPage },
+];

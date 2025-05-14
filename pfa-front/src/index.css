@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* src/styles/global.css */
+@theme{
+  --color-gray: #494949;
+  --color-main: #89a8b2;
+  --color-main-light: #e1e8eb;
+    --color-main-between: #b8cad0;
+
+  --color-beige:#F1F0E8;
+  --color-hover-main: #6299a8;
+  --color-pink:#a0847b;
+}
+
 /* 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
