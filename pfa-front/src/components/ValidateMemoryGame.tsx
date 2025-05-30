@@ -12,7 +12,7 @@ const ValidateMemoryGame: React.FC<ValidateMemoryGameProps> = ({
   onConfirm,
 }) => {
   return (
-    <div className="w-full max-w-[600px] p-[20px] mt-[40px] flex flex-col items-center gap-[30px] shadow text-center">
+    <div className="w-full max-w-[600px] p-[20px] mt-[40px] flex flex-col items-center gap-[30px] text-center">
       <h2 className="text-lg text-(--color-gray) font-semibold">
         Vérification des images
       </h2>
@@ -45,7 +45,7 @@ const ValidateMemoryGame: React.FC<ValidateMemoryGameProps> = ({
         </button>
         <button
           onClick={onConfirm}
-          className="px-6 py-2 bg-(--color-main) hover:bg-(--color-hover-main) text-white rounded-full"
+          className="px-6 py-2 bg-(--color-hover-main) text-white rounded-full"
         >
           Confirmer
         </button>
