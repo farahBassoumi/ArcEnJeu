@@ -43,6 +43,11 @@ const Home: React.FC = () => {
               description="Créez un jeu à choix multiples en choisissants le nombre des questions et en entrant les questions et les réponses."
               onClick={() => setSelectedGame(GameTypes.MCQ)}
             />
+                        <GameTypeCard
+              label=" Jeu des émotions"
+              description="Créez un jeu basé sur les émotions en écrivant une histoire interactive, puis en définissant les émotions attendues à la fin."
+              onClick={() => setSelectedGame(GameTypes.EmotionGame)}
+            />
           </div>
         </div>
       )}
