@@ -19,23 +19,26 @@ const ValidateMemoryGame: React.FC<ValidateMemoryGameProps> = ({
       <p className="text-sm text-(--color-gray)">
         Veuillez vérifier que toutes les images sont correctes.
       </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full">
-        {images.map((file, idx) => (
-          <div key={idx} className="w-full border rounded-md overflow-hidden">
-            {file ? (
-              <img
-                src={URL.createObjectURL(file)}
-                alt={`Image ${idx + 1}`}
-                className="w-full h-auto object-cover"
-              />
-            ) : (
-              <div className="w-full h-[100px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
-                Aucune image
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      <div className="flex flex-wrap justify-center gap-4 w-full">
+  {images.map((file, idx) => (
+    <div
+      key={idx}
+      className="w-[120px] border rounded-md overflow-hidden flex-shrink-0"
+    >
+      {file ? (
+        <img
+          src={URL.createObjectURL(file)}
+          alt={`Image ${idx + 1}`}
+          className="w-full h-auto object-cover"
+        />
+      ) : (
+        <div className="w-full h-[100px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+          Aucune image
+        </div>
+      )}
+    </div>
+  ))}
+</div>
       <div className="flex gap-4 mt-6">
         <button
           onClick={onBack}

@@ -18,7 +18,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({ index, image, onCha
       type="file"
       accept="image/*"
       onChange={handleFileChange}
-      className="w-full px-4 py-2 rounded-[40px] bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[--color-main]"
+      className="w-full px-4 py-2 rounded-[15px] bg-white focus:outline-none focus:ring-2 focus:ring-[--color-main]"
     />
   );
 };
