@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GameTypes } from "../types/gameTypes.enum";
 import MemoryGameComponent from "../components/memoryGame";
+import EmotionGameForm from "../components/emotionsGame";
 type GameTypeCardProps = {
   label: string;
   description: string;
@@ -53,6 +54,9 @@ const Home: React.FC = () => {
       )}
       {selectedGame === GameTypes.MEMORY && (
         <MemoryGameComponent setSelectedGame={setSelectedGame} />
+      )}
+      {selectedGame === GameTypes.EmotionGame && (
+        <EmotionGameForm setSelectedGame={setSelectedGame} />
       )}
 
       {selectedGame === GameTypes.MCQ && (
