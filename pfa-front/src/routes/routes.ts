@@ -6,7 +6,9 @@ export const PRIVATE_ROUTES = {
 };
 
 export const PUBLIC_ROUTES = {
-  LandingPage: '/'
+  LandingPage: '/',
+  Login: '/login',
+  SignUp: '/signup',
 };
 
 export const ROUTES = {
