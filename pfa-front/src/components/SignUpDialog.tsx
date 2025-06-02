@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import ArrowRight from "../assets/icons/ArrowRight.svg";
 import { signUp } from "../services/authentication.services";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
@@ -13,7 +12,6 @@ interface SignUpDialogFormData {
 }
 
 const SignUpDialog: React.FC = () => {
-  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<SignUpDialogFormData>({
     username: "",
     email: "",

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { addNewMemoryGame, getGames } from "../services/game.services";
+import { addNewMemoryGame } from "../services/game.services";
 import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
 import { ImageUploadSection } from "../components/ImageUploadsSection";
@@ -78,29 +78,44 @@ const AddMemoryGame = ({}: {}) => {
   };
 
   useEffect(() => {
-    getGames();
-
     setShowValidationStep(false);
     setFormMessages();
   }, [formData, pairImages]);
 
-  const onValidationSubmit = () => {
+  const onValidationSubmit = async () => {
     if (isFormValid) {
-      console.log("Form is valid, proceeding with submission...");
-      const validImages = pairImages.filter((img) => img !== null);
-      addNewMemoryGame(formData, validImages);
+      try {
+        const validImages = pairImages.filter((img) => img !== null);
+        const result = await addNewMemoryGame(
+          formData,
+          validImages,
+          (msg, type = "info") => {
+            if (type === "success") toast.success(msg);
+            else if (type === "error") toast.error(msg);
+            else toast.info(msg);
+          }
+        );
 
-      toast.success(t("success.added"));
-      handleBack();
+        if (result == true) {
+          handleBack();
+          toast.success(t("success.added"));
+        } else {
+          toast.error(t("error.general"));
+        }
+      } catch (error: any) {
+        toast.error(t("error.general"));
+        console.error("Error creating memory game:", error);
+      }
     }
   };
+
   const handleBack = () => {
     navigate("/home");
   };
 
   return (
     <div className="w-full max-w-[600px] py-[30px] px-[50px] mt-[40px] flex flex-col items-center justify-center shadow-md  rounded-[30px] bg-(--color-main-light) shadow text-center">
-      <ToastContainer
+      {/* <ToastContainer
         position="top-center"
         autoClose={1500}
         hideProgressBar={true}
@@ -109,7 +124,9 @@ const AddMemoryGame = ({}: {}) => {
         draggable={false}
         //  closeButton={false}
         toastClassName="!bg-[--color-main-light] !text-[--color-gray] !rounded-[30px] !shadow-md !px-6 m-4  text-sm font-medium text-center"
-      />
+      /> */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+
       {!showValidationStep ? (
         <div className="pt-[40px]">
           <div className="py-[10px]">

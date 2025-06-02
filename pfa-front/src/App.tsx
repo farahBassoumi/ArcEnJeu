@@ -35,6 +35,7 @@ function App() {
   return (
     <BrowserRouter>
       <NavigationHandler />
+      
       <Routes>
         <Route element={<Layout />}>
           {publicRoutes.map(({ path, component: Component }) => (

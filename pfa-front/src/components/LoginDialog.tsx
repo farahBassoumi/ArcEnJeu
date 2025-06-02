@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { login } from "../services/authentication.services";
 import { AuthError } from "@supabase/supabase-js";
+import { useUser } from "../utils/UserContext";
 
 interface LoginDialogFormData {
   email: string;
@@ -11,11 +12,12 @@ interface LoginDialogFormData {
 
 const LoginDialog: React.FC = () => {
   const [formData, setFormData] = useState<LoginDialogFormData>({
+    //TODO: remove this default email and password
     email: "bassoumifaraah@gmail.com",
     password: "111111",
   });
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const { contextLogin } = useUser();
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -33,16 +35,15 @@ const LoginDialog: React.FC = () => {
     }
 
     const result = await login(formData.email, formData.password);
-   
     if (result === null || result instanceof AuthError) {
-            const error = result as AuthError;
+      const error = result as AuthError;
 
       if (error.message !== null) setError(error.message);
       else setError("Une erreur s'est produite lors de la connexion.");
       return;
     }
-    console.log("result", result);
-    localStorage.setItem("userId", JSON.stringify(result.user.id));
+    console.log("Login successful:", result);
+    contextLogin(result.user.id);
     navigate(ROUTES.Home);
   };
 

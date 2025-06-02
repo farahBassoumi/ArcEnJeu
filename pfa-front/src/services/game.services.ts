@@ -113,14 +113,7 @@ const addImage = async (file: File) => {
   return data.path;
 };
 
-//  const getLevels = async () => {
-//   //TODO:Add a acheck here to only get the memory games
-//   let { data: levels, error } = await supabase.from("level").select("*");
-//   console.log("inside the get levels");
-//   console.log(levels);
-//   if (error) throw error;
-//   return levels;
-// };
+
 const getHighestLevel = async (gameId: string) => {
   //TODO:Add a acheck here to only get the memory games
   let { data: level } = await supabase
@@ -151,18 +144,6 @@ const getHighestScreenNumber = async (levelId: string) => {
   if (error) throw error;
 };
 
-const uploadImage = async (file: File, index: number) => {
-  const filePath = `memory-game/${Date.now()}_${index}_${file.name}`;
-  const { data, error } = await supabase.storage
-    .from("memory-game-images")
-    .upload(filePath, file);
-
-  if (error) throw error;
-  const { data: publicUrl } = supabase.storage
-    .from("memory-game-images")
-    .getPublicUrl(filePath);
-  return publicUrl.publicUrl;
-};
 
 export const addNewLevelScreen = async (
   formData: any,
@@ -188,42 +169,54 @@ export const addNewLevelScreen = async (
   return true;
 };
 
-export const addNewMemoryGame = async (formData: any, pairImages: File[]) => {
+export const addNewMemoryGame = async (
+  formData: any,
+  pairImages: File[],
+  notify: (msg: string, type?: "success" | "error" | "info") => void
+) => {
   const { name, description, category, instruction } = formData;
-  console.log("Adding new memory game with data:", formData);
-  console.log("Pair images:", pairImages);
-  console.log("Game name:", name);
-  console.log("Game description:", description);
-  console.log("Game category:", category);
-  console.log("Game instruction:", instruction);
 
-  // Create a new game entry
-  const gameId = await createMemoryGame(name, description, category);
-  const levelId = await createLevel(gameId);
+  try {
+    notify("Creating game...", "info");
+    const gameId = await createMemoryGame(name, description, category);
+    notify("Game created successfully!", "success");
 
-  const { error } = await supabase.from("screen").insert([
-    {
-      level_id: levelId,
-      screen_number: 1,
-      instruction: instruction,
-      type: GameTypes.MEMORY,
-    },
-  ]);
-  if (error) throw error;
-  console.log("Screen added successfully with levelId:", levelId);
-  const screenId = await getScreenId(levelId, 1);
+    notify("Creating level...", "info");
+    const levelId = await createLevel(gameId);
+    notify("Level created successfully!", "success");
 
-  await addScreenOptions(screenId, pairImages);
+    notify("Creating screen...", "info");
+    const { error } = await supabase.from("screen").insert([
+      {
+        level_id: levelId,
+        screen_number: 1,
+        instruction: instruction,
+        type: GameTypes.MEMORY,
+      },
+    ]);
+    if (error) throw new Error("Error creating screen.");
+    notify("Screen created!", "success");
 
-  return true;
+    const screenId = await getScreenId(levelId, 1);
+
+    notify("Uploading image pairs...", "info");
+    await addScreenOptions(screenId, pairImages);
+    notify("Images added!", "success");
+
+    return true;
+  } catch (err: any) {
+    notify(err.message || "An error occurred", "error");
+    return false;
+  }
 };
+
 
 const createMemoryGame = async (
   name: string,
   description: string,
   category: string
 ) => {
-  
+
   const educatorId = JSON.parse(localStorage.getItem("userId") ?? "null");
 
   console.log("Creating memory game with name:", name);
@@ -236,7 +229,7 @@ const createMemoryGame = async (
       description,
     },
   ]);
-  if (error) throw error;
+if (error) throw new Error("Error creating game");
   console.log("Game created successfully with name:", name);
   const { data } = await supabase
     .from("game")
@@ -285,44 +278,3 @@ const createLevel = async (gameId: string) => {
 
   return data[0].level_id;
 };
-
-// export const addMemoryGame = () => {};
-// interface MemoryGameCreationRequest {
-//   name: string;
-//   description: string;
-//   type: string;
-// }
-// export const createMemoryGame = async (
-//   prompt: string,
-//   numberOfPairs: number,
-//   imageFiles: File[]
-// ) => {
-//   //when creating a game, i wanna get the created  game id and then create a level, and then get the created level id
-//   // , then create a screen with the level id . and how can i give the educator the possibility to create an other level
-//   //  of the same game or to create two levels from the game that he wants o create , or browse through gamesn and he should
-//   // have the possinility to c=either add a screen , in that case we just append to the existing screens, aor create a levek,
-//   //  and in that case we get the associciated game's id then  create  anew level to that game and inserts the screens ,
-//   // either to create a whole other game and he will create a game, a level and a screen.
-//   //the methods should be in a shared service
-
-//   // Upload each image and collect URLs
-//   const uploadedUrls: string[] = [];
-//   for (let i = 0; i < imageFiles.length; i++) {
-//     const file = imageFiles[i];
-//     if (!file) throw new Error(`Image at index ${i} is missing.`);
-//     const url = await uploadImage(file, i);
-//     uploadedUrls.push(url);
-//   }
-
-//   // Insert game entry into your "memory_games" table
-//   const { data, error } = await supabase.from("memory_games").insert([
-//     {
-//       prompt,
-//       number_of_pairs: numberOfPairs,
-//       images: uploadedUrls, // Make sure your table supports storing arrays
-//     },
-//   ]);
-
-//   if (error) throw error;
-//   return data;
-// };

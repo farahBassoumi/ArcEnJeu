@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Logo from "../assets/icons/Logo.svg";
 import Translation from "../assets/icons/Translation.svg";
 import { useNavigate } from "react-router-dom";
 import i18n from "../i18n/config";
 import ArrowRight from "../assets/icons/ArrowRight.svg";
+import { useUser } from "../utils/UserContext";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, contextLogout } = useUser();
 
   useEffect(() => {
     console.log("Checking user login status...");
     const userId = localStorage.getItem("userId");
     console.log(`User ID from localStorage: ${userId}`);
     console.log(`Is user logged in? ${!!userId}`);
-    setIsLoggedIn(!!userId);
   }, []);
 
   const onChangeLanguage = () => {
@@ -25,8 +25,7 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userId");
-    setIsLoggedIn(false);
+    contextLogout();
     navigate("/");
   };
 

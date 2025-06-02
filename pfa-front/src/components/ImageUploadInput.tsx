@@ -7,7 +7,7 @@ type ImageUploadInputProps = {
   onChange: (index: number, file: File | null) => void;
 };
 
-const ImageUploadInput: React.FC<ImageUploadInputProps> = ({ index, image, onChange }) => {
+const ImageUploadInput: React.FC<ImageUploadInputProps> = ({ index, onChange }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     onChange(index, file);
