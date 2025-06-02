@@ -1,20 +1,13 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
-import { toast, ToastContainer } from "react-toastify";
+import { toast, Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  addNewLevelScreen,
-  getGames,
-
-} from "../services/game.services";
-
+import { addNewLevelScreen, getMemoryGames } from "../services/game.services";
 import { t } from "i18next";
-import { useNavigate } from "react-router-dom";
 import { ImageUploadSection } from "../components/ImageUploadsSection";
 import type { Game } from "../types/game";
 
 const AddMemoryGameLevel = ({}: {}) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     numberOfPairs: 0,
     instruction: "",
@@ -25,7 +18,6 @@ const AddMemoryGameLevel = ({}: {}) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [showValidationStep, setShowValidationStep] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
-
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -38,7 +30,7 @@ const AddMemoryGameLevel = ({}: {}) => {
   };
   const fetchGames = async () => {
     try {
-      const fetchedGames = await getGames();
+      const fetchedGames = await getMemoryGames();
 
       setGames(fetchedGames);
     } catch (error) {
@@ -103,38 +95,47 @@ const AddMemoryGameLevel = ({}: {}) => {
     //   if (pairImages[0]) addImage(pairImages[0]);
   }, [formData, pairImages]);
 
-  const onValidationSubmit = async () => {
-    if (isFormValid) {
-      console.log("Form is valid, proceeding with submission...");
+  const onValidationSubmit = () => {
+    if (!isFormValid) return;
 
-      const validImages = pairImages.filter((img): img is File => img !== null);
-      const result = await addNewLevelScreen(formData, validImages);
-      if (result == true) {
-        toast.success(t("success.added"));
+    const validImages = pairImages.filter((img) => img !== null);
+
+    const toastId = toast.loading("Creating game...");
+
+    //  const result = await addNewLevelScreen(formData, validImages);
+
+    const subscription = addNewLevelScreen(formData, validImages).subscribe({
+      next: ({ msg, type }) => {
+        if (type === "info") {
+          toast.loading(msg, { id: toastId });
+        } else if (type === "success") {
+          toast.success(msg);
+        } else if (type === "error") {
+          toast.error(msg);
+          toast.dismiss(toastId);
+        }
+      },
+      error: (err) => {
+        toast.error("An error occurred", err);
+        toast.dismiss(toastId);
+      },
+      complete: () => {
+        toast.dismiss(toastId);
+        toast.success(t("success.game_added"));
         handleBack();
-      } else {
-        toast.error("something went wrong");
-       // navigate("/memory-game/add-leveladd-level");
-      }
-    }
+      },
+    });
+
+    return () => subscription.unsubscribe();
   };
 
   const handleBack = () => {
-    navigate("/home");
+    setShowValidationStep(false);
   };
 
   return (
     <div className="w-full max-w-[600px] py-[30px] px-[50px] mt-[40px] flex flex-col items-center justify-center shadow-md  rounded-[30px] bg-(--color-main-light) shadow text-center">
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        hideProgressBar={true}
-        closeOnClick
-        pauseOnHover={false}
-        draggable={false}
-        closeButton={false}
-        toastClassName="!bg-[--color-main-light] !text-[--color-gray] !rounded-[30px] !shadow-md !px-6 m-4  text-sm font-medium text-center"
-      />
+      <Toaster />
       {!showValidationStep ? (
         <div className="pt-[40px]">
           <div className="py-[10px]">

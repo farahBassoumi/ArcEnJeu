@@ -3,58 +3,173 @@ import type { Game } from "../types/game";
 import { supabase } from "../utils/supabaseClient";
 import { Observable } from "rxjs";
 
-export const getGames = async () => {
-  //TODO:Add a acheck here to only get the memory games
-  let { data: games, error } = await supabase.from("game").select("*");
-  console.log("inside the et game");
+export const getMemoryGames = async () => {
+  let { data: games, error } = await supabase
+    .from("game")
+    .select("*")
+    .eq("type", GameTypes.MEMORY_MATCH);
   console.log(games);
   if (error) throw error;
   return games as Game[];
 };
 
-// export const getScreens = async () => {
-//   //TODO:Add a acheck here to only get the memory games
-//   let { data: screens, error } = await supabase.from("screen").select("*");
-//   console.log("inside the get screens");
-//   console.log(screens);
-//   if (error) throw error;
-//   return screens;
-// };
+export const addScreen = (
+  formData: any,
+  pairImages: File[] = []
+): Observable<{ msg: string; type: "info" | "success" | "error" }> => {
+  return new Observable((subscriber) => {
+    (async () => {
+      try {
+        const gameId = formData.gameId;
 
-export const addScreen = async (formData: any, pairImages: File[] = []) => {
-  const gameId = formData.gameId;
-  let levelId = await getHighestLevel(gameId);
-  if (!levelId) {
-    console.log(
-      "No levels found for the specified game, about to create a new level:"
-    );
-    levelId = await createLevel(gameId);
-  }
-  let screenNumber = 1;
-  const highestScreenNumber = await getHighestScreenNumber(levelId);
-  if (highestScreenNumber !== undefined) screenNumber = highestScreenNumber + 1;
+        subscriber.next({ msg: "Getting highest level...", type: "info" });
+        let levelId = await getHighestLevel(gameId);
+        if (!levelId) {
+          subscriber.next({
+            msg: "No level found. Creating new level...",
+            type: "info",
+          });
+          levelId = await createLevel(gameId);
 
-  const { error } = await supabase.from("screen").insert([
-    {
-      level_id: levelId,
-      screen_number: screenNumber,
-      instruction: formData.instruction,
-      type: GameTypes.MEMORY,
-    },
-  ]);
-  if (error) throw error;
-  console.log(
-    "Screen added successfully with levelId:",
-    levelId,
-    "and screenNumber:",
-    screenNumber
-  );
-  const screenId = await getScreenId(levelId, screenNumber);
+          subscriber.next({ msg: "New level created.", type: "success" });
+        }
 
-  await addScreenOptions(screenId, pairImages);
+        subscriber.next({
+          msg: "Checking highest screen number...",
+          type: "info",
+        });
+        let screenNumber = 1;
+        const highestScreenNumber = await getHighestScreenNumber(
+          levelId.level_id
+        );
+        if (highestScreenNumber !== undefined) {
+          screenNumber = highestScreenNumber + 1;
+        }
 
-  return true;
+        subscriber.next({ msg: "Inserting new screen...", type: "info" });
+
+        const screenId = await createScreen(
+          levelId.level_id,
+          formData.instruction,
+          screenNumber,
+          GameTypes.MEMORY
+        );
+
+        subscriber.next({
+          msg: "Screen created successfully!",
+          type: "success",
+        });
+
+        subscriber.next({ msg: "Uploading image pairs...", type: "info" });
+        await addScreenOptions(screenId, pairImages);
+        subscriber.next({ msg: "Images added successfully!", type: "success" });
+
+        subscriber.complete();
+      } catch (err: any) {
+        subscriber.error(err);
+      }
+    })();
+
+    return () => {};
+  });
 };
+
+export const addNewLevelScreen = (
+  formData: any,
+  pairImages: File[] = []
+): Observable<{ msg: string; type: "info" | "success" | "error" }> => {
+  return new Observable((subscriber) => {
+    (async () => {
+      try {
+        const gameId = formData.gameId;
+
+        subscriber.next({ msg: "Creating new level...", type: "info" });
+        const levelId = await createLevel(gameId);
+        subscriber.next({
+          msg: "Level created successfully!",
+          type: "success",
+        });
+
+        subscriber.next({
+          msg: "Creating screen for new level...",
+          type: "info",
+        });
+        const { error } = await supabase.from("screen").insert([
+          {
+            level_id: levelId,
+            screen_number: 1,
+            instruction: formData.instruction,
+            type: GameTypes.MEMORY,
+          },
+        ]);
+        if (error) throw new Error("Error creating screen.");
+        subscriber.next({
+          msg: "Screen created successfully!",
+          type: "success",
+        });
+
+        const screenId = await getScreenId(levelId, 1);
+
+        subscriber.next({ msg: "Uploading image pairs...", type: "info" });
+        await addScreenOptions(screenId, pairImages);
+        subscriber.next({ msg: "Images added successfully!", type: "success" });
+
+        subscriber.complete();
+      } catch (err: any) {
+        subscriber.error(err);
+      }
+    })();
+
+    return () => {};
+  });
+};
+
+export const addNewMemoryGame = (
+  formData: any,
+  pairImages: File[]
+): Observable<{ msg: string; type: "info" | "success" | "error" }> => {
+  return new Observable((subscriber) => {
+    const { name, description, category, instruction } = formData;
+
+    (async () => {
+      try {
+        subscriber.next({ msg: "Creating game...", type: "info" });
+        const gameId = await createMemoryGame(name, description, category);
+        subscriber.next({ msg: "Game created successfully!", type: "success" });
+
+        subscriber.next({ msg: "Creating level...", type: "info" });
+        const levelId = await createLevel(gameId);
+        subscriber.next({
+          msg: "Level created successfully!",
+          type: "success",
+        });
+
+        subscriber.next({ msg: "Creating screen...", type: "info" });
+
+        const screenId = await createScreen(
+          levelId,
+          instruction,
+          1,
+          GameTypes.MEMORY
+        );
+
+        subscriber.next({ msg: "Screen created!", type: "success" });
+
+        subscriber.next({ msg: "Uploading image pairs...", type: "info" });
+        await addScreenOptions(screenId, pairImages);
+        subscriber.next({ msg: "Images added!", type: "success" });
+
+        subscriber.complete();
+      } catch (err: any) {
+        subscriber.error(err);
+      }
+    })();
+
+    return () => {};
+  });
+};
+
+//utility functions
 
 const getScreenId = async (levelId: string, screenNumber: number) => {
   const { data, error } = await supabase
@@ -115,7 +230,6 @@ const addImage = async (file: File) => {
 };
 
 const getHighestLevel = async (gameId: string) => {
-  //TODO:Add a acheck here to only get the memory games
   let { data: level } = await supabase
     .from("level")
     .select("*")
@@ -125,11 +239,10 @@ const getHighestLevel = async (gameId: string) => {
   if (level && level.length > 0) {
     return level[0];
   }
-  return null; // Return null if no levels found
+  return null;
 };
 
 const getHighestScreenNumber = async (levelId: string) => {
-  //TODO:Add a acheck here to only get the memory games
   let { data: screen, error } = await supabase
     .from("screen")
     .select("screen_number")
@@ -139,89 +252,21 @@ const getHighestScreenNumber = async (levelId: string) => {
   console.log(screen);
   if (screen && screen.length > 0) {
     console.log("highest screen number for the level", screen[0].screen_number);
-    return screen[0].screen_number; // Return the level_id of the highest level
+    return screen[0].screen_number;
   }
   if (error) throw error;
 };
 
-export const addNewLevelScreen = async (
-  formData: any,
-  pairImages: File[] = []
-) => {
-  const gameId = formData.gameId;
-  const levelId = await createLevel(gameId);
-
-  const { error } = await supabase.from("screen").insert([
-    {
-      level_id: levelId,
-      screen_number: 1,
-      instruction: formData.instruction,
-      type: GameTypes.MEMORY,
-    },
-  ]);
-  if (error) throw error;
-  console.log("Screen added successfully with levelId:", levelId);
-  const screenId = await getScreenId(levelId, 1);
-
-  await addScreenOptions(screenId, pairImages);
-
-  return true;
-};
-
-export const addNewMemoryGame = (
-  formData: any,
-  pairImages: File[]
-): Observable<{ msg: string; type: "info" | "success" | "error" }> => {
-  return new Observable((subscriber) => {
-    const { name, description, category, instruction } = formData;
-
-    (async () => {
-      try {
-        subscriber.next({ msg: "Creating game...", type: "info" });
-        const gameId = await createMemoryGame(name, description, category);
-        subscriber.next({ msg: "Game created successfully!", type: "success" });
-
-        subscriber.next({ msg: "Creating level...", type: "info" });
-        const levelId = await createLevel(gameId);
-        subscriber.next({
-          msg: "Level created successfully!",
-          type: "success",
-        });
-
-        subscriber.next({ msg: "Creating screen...", type: "info" });
-
-        const screenId = await createFirstScreen(
-          levelId,
-          instruction,
-          GameTypes.MEMORY
-        );
-
-        subscriber.next({ msg: "Screen created!", type: "success" });
-
-        subscriber.next({ msg: "Uploading image pairs...", type: "info" });
-        await addScreenOptions(screenId, pairImages);
-        subscriber.next({ msg: "Images added!", type: "success" });
-
-        subscriber.complete();
-      } catch (err: any) {
-        subscriber.error(err);
-      }
-    })();
-
-    return () => {
-    };
-  });
-};
-
-const createFirstScreen = async (
+const createScreen = async (
   levelId: string,
   instruction: string,
+  screenNumber: number,
   type: GameTypes
 ) => {
   const { error } = await supabase.from("screen").insert([
     {
       level_id: levelId,
-      screen_number: 1,
+      screen_number: screenNumber,
       instruction: instruction,
       type: type,
     },
@@ -229,7 +274,7 @@ const createFirstScreen = async (
   if (error) throw new Error("Error creating screen.");
   console.log("Screen created successfully");
 
-  const screenId = await getScreenId(levelId, 1);
+  const screenId = await getScreenId(levelId, screenNumber);
 
   return screenId;
 };

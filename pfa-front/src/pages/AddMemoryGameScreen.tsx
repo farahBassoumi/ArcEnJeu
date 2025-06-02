@@ -1,23 +1,16 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
-import { toast, ToastContainer } from "react-toastify";
+import { toast, Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  addScreen,
-  getGames,
-
-} from "../services/game.services";
-
+import { addScreen, getMemoryGames } from "../services/game.services";
 import { t } from "i18next";
-import { useNavigate } from "react-router-dom";
 import { ImageUploadSection } from "../components/ImageUploadsSection";
 import type { Game } from "../types/game";
 
 const AddMemoryGameScreen = ({}: {}) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     numberOfPairs: 0,
-    instruction:"",
+    instruction: "",
     gameId: "",
   });
   const [pairImages, setPairImages] = useState<(File | null)[]>([]);
@@ -25,7 +18,6 @@ const AddMemoryGameScreen = ({}: {}) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [showValidationStep, setShowValidationStep] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
-
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -38,10 +30,9 @@ const AddMemoryGameScreen = ({}: {}) => {
   };
   const fetchGames = async () => {
     try {
-      const fetchedGames = await getGames();
+      const fetchedGames = await getMemoryGames();
 
       setGames(fetchedGames);
-    
     } catch (error) {
       console.error("Error fetching games:", error);
     }
@@ -105,32 +96,43 @@ const AddMemoryGameScreen = ({}: {}) => {
   }, [formData, pairImages]);
 
   const onValidationSubmit = () => {
-    if (isFormValid) {
-      console.log("Form is valid, proceeding with submission...");
+    if (!isFormValid) return;
 
-      const validImages = pairImages.filter((img): img is File => img !== null);
-      addScreen(formData, validImages);
-      toast.success(t("success.added"));
-      handleBack();
-    }
+    const validImages = pairImages.filter((img) => img !== null);
+
+    const toastId = toast.loading("Creating game...");
+
+    const subscription = addScreen(formData, validImages).subscribe({
+      next: ({ msg, type }) => {
+        if (type === "info") {
+          toast.loading(msg, { id: toastId });
+        } else if (type === "success") {
+          toast.success(msg);
+        } else if (type === "error") {
+          toast.error(msg);
+          toast.dismiss(toastId);
+        }
+      },
+      error: (err) => {
+        toast.error("An error occurred", err);
+        toast.dismiss(toastId);
+      },
+      complete: () => {
+        toast.dismiss(toastId);
+        toast.success(t("success.game_added"));
+        handleBack();
+      },
+    });
+
+    return () => subscription.unsubscribe();
   };
 
   const handleBack = () => {
-    navigate("/home");
+    setShowValidationStep(false);
   };
-
   return (
     <div className="w-full max-w-[600px] py-[30px] px-[50px] mt-[40px] flex flex-col items-center justify-center shadow-md  rounded-[30px] bg-(--color-main-light) shadow text-center">
-      <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        hideProgressBar={true}
-        closeOnClick
-        pauseOnHover={false}
-        draggable={false}
-        closeButton={false}
-        toastClassName="!bg-[--color-main-light] !text-[--color-gray] !rounded-[30px] !shadow-md !px-6 m-4  text-sm font-medium text-center"
-      />
+      <Toaster />
       {!showValidationStep ? (
         <div className="pt-[40px]">
           <div className="py-[10px]">
@@ -175,7 +177,7 @@ const AddMemoryGameScreen = ({}: {}) => {
               </label>
               <input
                 type="text"
-                name="prompt"
+                name="instruction"
                 value={formData.instruction}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-[15px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"

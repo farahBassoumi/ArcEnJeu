@@ -6,9 +6,7 @@ export const login = async (email: string, password: string) => {
       email,
       password,
     });
-    console.log("inside the login");
-    console.log('data:', data);
-    console.log('error:', error);
+
     if (error) return error;
     return data;
   } catch (error) {
