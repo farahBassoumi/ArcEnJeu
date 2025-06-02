@@ -4,16 +4,19 @@
   "games": {
     "memory": {
       "create_custom_memory_game": "Créez un jeu de mémoire personnalisé",
+      "create_custom_memory_game_level": "Créez un nouveau ecran dans un nouveau niveau de jeu de mémoire personnalisé",
+      "create_custom_memory_game_screen": "Créez un nouveau ecran de jeu de mémoire personnalisé",
       "configure_game_and_have_fun": "Configurez les paramètres du jeu, ajoutez les paires d’images et amusez-vous avec les enfants !",
       "game_name": "Nom du jeu",
       "optional_description": "Description (facultative)",
       "select_category": "Choisissez une catégorie pour ce jeu",
       "select_category_placeholder": "-- Sélectionnez une catégorie --",
+      "select_game": "Choisissez le jeu auquel vous voulez ajouter l'ecran",
+      "select_game_placeholder": "-- Sélectionnez un jeu existant --",
       "number_of_pairs": "Nombre de paires d’images à associer",
       "number_of_pairs_placeholder": "Entrez un nombre entre 2 et 20",
-      "prompt_before_start": "Message que l’enfant verra avant de commencer",
-      "enter_pairs": "Entrez les paires",
-      "default_prompt_before_start": "Choisissez les deux cartes identiques"
+      "instruction_before_start": "Message que l’enfant verra avant de commencer",
+      "enter_pairs": "Entrez les paires"
     }
   },
   "buttons": {

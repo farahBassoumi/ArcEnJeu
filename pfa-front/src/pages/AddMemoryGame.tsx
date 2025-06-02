@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from "react";
-import ImageUploadInput from "../components/ImageUploadInput";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { addMemoryGame, getGames } from "../services/game.services";
-import { Categories } from "../services/shared.services";
+import { addNewMemoryGame, getGames } from "../services/game.services";
 import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
 import { ImageUploadSection } from "../components/ImageUploadsSection";
+import { Category, getCategories } from "../types/enums/category.enum";
 
 const AddMemoryGame = ({}: {}) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    numberOfPairs: 0,
-    name: "",
-    description: "",
-    category: "",
-    prompt: t("games.memory.default_prompt_before_start"),
+    numberOfPairs: 2,
+    name: "game name",
+    description: "desc",
+    category: Category.ANIMALS,
+    instruction: "instruction",
   });
   const [pairImages, setPairImages] = useState<(File | null)[]>([]);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [showValidationStep, setShowValidationStep] = useState(false);
+  const categories = getCategories();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -54,14 +53,14 @@ const AddMemoryGame = ({}: {}) => {
   };
 
   const setFormMessages = () => {
-    const { numberOfPairs, prompt } = formData;
+    const { numberOfPairs, instruction } = formData;
 
     const imagesAreValid =
       pairImages.length === numberOfPairs &&
       pairImages.every((img) => img !== null);
 
     const numberValid = numberOfPairs >= 2 && numberOfPairs <= 20;
-    const fieldsFilled = prompt.trim() !== "";
+    const fieldsFilled = instruction.trim() !== "";
 
     const valid = numberValid && fieldsFilled && imagesAreValid;
 
@@ -69,21 +68,16 @@ const AddMemoryGame = ({}: {}) => {
 
     if (!numberValid) {
       setError(t("errors.invalid_pair_number"));
-      setSuccess("");
     } else if (!fieldsFilled) {
       setError(t("errors.missing_fields"));
-      setSuccess("");
     } else if (!imagesAreValid) {
       setError(t("errors.missing_images"));
-      setSuccess("");
     } else {
       setError("");
-      setSuccess(t("success.configured"));
     }
   };
 
   useEffect(() => {
-    console.log("inside of the useEffect memory game component");
     getGames();
 
     setShowValidationStep(false);
@@ -93,7 +87,8 @@ const AddMemoryGame = ({}: {}) => {
   const onValidationSubmit = () => {
     if (isFormValid) {
       console.log("Form is valid, proceeding with submission...");
-      addMemoryGame();
+      const validImages = pairImages.filter((img) => img !== null);
+      addNewMemoryGame(formData, validImages);
 
       toast.success(t("success.added"));
       handleBack();
@@ -166,8 +161,8 @@ const AddMemoryGame = ({}: {}) => {
                 <option value="">
                   {t("games.memory.select_category_placeholder")}
                 </option>
-                {Categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.value}>
                     {category.name}
                   </option>
                 ))}
@@ -175,12 +170,12 @@ const AddMemoryGame = ({}: {}) => {
             </div>
             <div className="w-full text-left text-(--color-gray)">
               <label className="block mb-1 text-xs ml-[15px]">
-                {t("games.memory.prompt_before_start")}
+                {t("games.memory.instruction_before_start")}
               </label>
               <input
                 type="text"
-                name="prompt"
-                value={formData.prompt}
+                name="instruction"
+                value={formData.instruction}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-[15px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"
               />
@@ -214,9 +209,6 @@ const AddMemoryGame = ({}: {}) => {
 
             <div className="w-full flex flex-col text-sm my-[10px] ">
               {error && <p className="text-red-500 text-center">{error}</p>}
-              {success && (
-                <p className="text-green-600 text-center">{success}</p>
-              )}
             </div>
 
             <div className="flex flex-row justify-center gap-[20px] items-center">

@@ -10,10 +10,9 @@ interface LoginDialogFormData {
 }
 
 const LoginDialog: React.FC = () => {
-  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<LoginDialogFormData>({
-    email: "",
-    password: "",
+    email: "bassoumifaraah@gmail.com",
+    password: "111111",
   });
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +41,8 @@ const LoginDialog: React.FC = () => {
       else setError("Une erreur s'est produite lors de la connexion.");
       return;
     }
-
+    console.log("result", result);
+    localStorage.setItem("userId", JSON.stringify(result.user.id));
     navigate(ROUTES.Home);
   };
 

@@ -1,4 +1,5 @@
 export enum GameTypes {
     MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
     MEMORY_MATCH = 'MEMORY_MATCH',
+    MEMORY = 'MEMORY',
 }

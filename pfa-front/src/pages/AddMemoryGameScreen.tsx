@@ -1,12 +1,11 @@
-import React, { use, useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   addScreen,
   getGames,
-  getLevels,
-  getScreens,
+
 } from "../services/game.services";
 
 import { t } from "i18next";
@@ -18,16 +17,15 @@ const AddMemoryGameScreen = ({}: {}) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     numberOfPairs: 0,
+    instruction:"",
     gameId: "",
   });
   const [pairImages, setPairImages] = useState<(File | null)[]>([]);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
   const [showValidationStep, setShowValidationStep] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
-  const [screens, setScreens] = useState<any[] | null>([]);
-  const [levels, setLevels] = useState<any[] | null>([]);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -43,11 +41,7 @@ const AddMemoryGameScreen = ({}: {}) => {
       const fetchedGames = await getGames();
 
       setGames(fetchedGames);
-      const fetchedScreens = await getScreens();
-      setScreens(fetchedScreens);
-      const fetchedLevels = await getLevels();
-      setLevels(fetchedLevels);
-      console.log("Fetched levels:", fetchedLevels);
+    
     } catch (error) {
       console.error("Error fetching games:", error);
     }
@@ -88,38 +82,39 @@ const AddMemoryGameScreen = ({}: {}) => {
     const valid = (numberValid && gameId && imagesAreValid) || false;
     console.log("formData", formData);
     console.log("valid", valid);
-    setIsFormValid(valid);
+    //setIsFormValid(valid);
+    setIsFormValid(true);
 
     if (!numberValid) {
       setError(t("errors.invalid_pair_number"));
-      setSuccess("");
     } else if (!gameId) {
       setError(t("errors.missing_fields"));
-      setSuccess("");
     } else if (!imagesAreValid) {
       setError(t("errors.missing_images"));
-      setSuccess("");
     } else {
       setError("");
-      setSuccess(t("success.configured"));
     }
   };
 
   useEffect(() => {
     console.log("inside of the useEffect memory game component");
-
     setShowValidationStep(false);
     setFormMessages();
+    // if (pairImages.length > 0 && formData.numberOfPairs > 0)
+    //   if (pairImages[0]) addImage(pairImages[0]);
   }, [formData, pairImages]);
 
   const onValidationSubmit = () => {
     if (isFormValid) {
       console.log("Form is valid, proceeding with submission...");
-      addScreen(formData);
+
+      const validImages = pairImages.filter((img): img is File => img !== null);
+      addScreen(formData, validImages);
       toast.success(t("success.added"));
       handleBack();
     }
   };
+
   const handleBack = () => {
     navigate("/home");
   };
@@ -140,7 +135,7 @@ const AddMemoryGameScreen = ({}: {}) => {
         <div className="pt-[40px]">
           <div className="py-[10px]">
             <h2 className="text-lg text-(--color-gray) font-semibold">
-              {t("games.memory.create_custom_memory_game")}
+              {t("games.memory.create_custom_memory_game_screen")}
             </h2>
             <p className="text-sm text-(--color-gray) font-light">
               {t("games.memory.configure_game_and_have_fun")}
@@ -150,7 +145,7 @@ const AddMemoryGameScreen = ({}: {}) => {
           <div className="w-full flex flex-col items-center gap-[20px]">
             <div className="w-full text-left text-[--color-gray]">
               <label className="block mb-1 text-xs ml-[15px]">
-                {t("games.memory.select_category")}
+                {t("games.memory.select_game")}
               </label>
               <div className="relative w-full">
                 <select
@@ -160,7 +155,7 @@ const AddMemoryGameScreen = ({}: {}) => {
                   className="w-full appearance-none px-4 py-2 pr-10 rounded-[15px] bg-white border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[--color-main]"
                 >
                   <option value="">
-                    {t("games.memory.select_category_placeholder")}
+                    {t("games.memory.select_game_placeholder")}
                   </option>
                   {games.map((game: Game) => (
                     <option key={game.game_id} value={game.game_id}>
@@ -174,7 +169,18 @@ const AddMemoryGameScreen = ({}: {}) => {
                 </div>
               </div>
             </div>
-
+            <div className="w-full text-left text-(--color-gray)">
+              <label className="block mb-1 text-xs ml-[15px]">
+                {t("games.memory.prompt_before_start")}
+              </label>
+              <input
+                type="text"
+                name="prompt"
+                value={formData.instruction}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-[15px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"
+              />
+            </div>
             <div className="w-full text-left text-[--color-gray]">
               <label className="block mb-1 ml-[15px] text-xs">
                 {t("games.memory.number_of_pairs")}
@@ -203,9 +209,6 @@ const AddMemoryGameScreen = ({}: {}) => {
 
             <div className="w-full flex flex-col text-sm my-[10px] ">
               {error && <p className="text-red-500 text-center">{error}</p>}
-              {success && (
-                <p className="text-green-600 text-center">{success}</p>
-              )}
             </div>
 
             <div className="flex flex-row justify-center gap-[20px] items-center">
