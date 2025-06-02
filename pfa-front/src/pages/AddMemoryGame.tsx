@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
-import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addNewMemoryGame } from "../services/game.services";
 import { t } from "i18next";
-import { useNavigate } from "react-router-dom";
 import { ImageUploadSection } from "../components/ImageUploadsSection";
 import { Category, getCategories } from "../types/enums/category.enum";
+import { toast, Toaster } from "react-hot-toast";
 
 const AddMemoryGame = ({}: {}) => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     numberOfPairs: 2,
     name: "game name",
@@ -40,7 +38,6 @@ const AddMemoryGame = ({}: {}) => {
       numberOfPairs: value,
     }));
 
-    // Reset image array
     setPairImages(new Array(value).fill(null));
   };
 
@@ -82,50 +79,46 @@ const AddMemoryGame = ({}: {}) => {
     setFormMessages();
   }, [formData, pairImages]);
 
-  const onValidationSubmit = async () => {
-    if (isFormValid) {
-      try {
-        const validImages = pairImages.filter((img) => img !== null);
-        const result = await addNewMemoryGame(
-          formData,
-          validImages,
-          (msg, type = "info") => {
-            if (type === "success") toast.success(msg);
-            else if (type === "error") toast.error(msg);
-            else toast.info(msg);
-          }
-        );
+  const onValidationSubmit = () => {
+    if (!isFormValid) return;
 
-        if (result == true) {
-          handleBack();
-          toast.success(t("success.added"));
-        } else {
-          toast.error(t("error.general"));
+    const validImages = pairImages.filter((img) => img !== null);
+
+    const toastId = toast.loading("Creating game...");
+
+    const subscription = addNewMemoryGame(formData, validImages).subscribe({
+      next: ({ msg, type }) => {
+        if (type === "info") {
+          toast.loading(msg, { id: toastId });
+        } else if (type === "success") {
+          toast.success(msg);
+        } else if (type === "error") {
+          toast.error(msg);
+          toast.dismiss(toastId);
         }
-      } catch (error: any) {
-        toast.error(t("error.general"));
-        console.error("Error creating memory game:", error);
-      }
-    }
+      },
+      error: (err) => {
+        toast.error("An error occurred", err);
+        toast.dismiss(toastId);
+      },
+      complete: () => {
+        toast.dismiss(toastId);
+        toast.success(t("success.game_added"));
+                handleBack();
+
+      },
+    });
+
+    return () => subscription.unsubscribe();
   };
 
   const handleBack = () => {
-    navigate("/home");
+    setShowValidationStep(false);
   };
 
   return (
     <div className="w-full max-w-[600px] py-[30px] px-[50px] mt-[40px] flex flex-col items-center justify-center shadow-md  rounded-[30px] bg-(--color-main-light) shadow text-center">
-      {/* <ToastContainer
-        position="top-center"
-        autoClose={1500}
-        hideProgressBar={true}
-        closeOnClick
-        pauseOnHover={false}
-        draggable={false}
-        //  closeButton={false}
-        toastClassName="!bg-[--color-main-light] !text-[--color-gray] !rounded-[30px] !shadow-md !px-6 m-4  text-sm font-medium text-center"
-      /> */}
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <Toaster />
 
       {!showValidationStep ? (
         <div className="pt-[40px]">

@@ -1,6 +1,7 @@
 import { GameTypes } from "../types/enums/gameTypes.enum";
 import type { Game } from "../types/game";
 import { supabase } from "../utils/supabaseClient";
+import { Observable } from "rxjs";
 
 export const getGames = async () => {
   //TODO:Add a acheck here to only get the memory games
@@ -113,7 +114,6 @@ const addImage = async (file: File) => {
   return data.path;
 };
 
-
 const getHighestLevel = async (gameId: string) => {
   //TODO:Add a acheck here to only get the memory games
   let { data: level } = await supabase
@@ -144,7 +144,6 @@ const getHighestScreenNumber = async (levelId: string) => {
   if (error) throw error;
 };
 
-
 export const addNewLevelScreen = async (
   formData: any,
   pairImages: File[] = []
@@ -169,55 +168,78 @@ export const addNewLevelScreen = async (
   return true;
 };
 
-export const addNewMemoryGame = async (
+export const addNewMemoryGame = (
   formData: any,
-  pairImages: File[],
-  notify: (msg: string, type?: "success" | "error" | "info") => void
-) => {
-  const { name, description, category, instruction } = formData;
+  pairImages: File[]
+): Observable<{ msg: string; type: "info" | "success" | "error" }> => {
+  return new Observable((subscriber) => {
+    const { name, description, category, instruction } = formData;
 
-  try {
-    notify("Creating game...", "info");
-    const gameId = await createMemoryGame(name, description, category);
-    notify("Game created successfully!", "success");
+    (async () => {
+      try {
+        subscriber.next({ msg: "Creating game...", type: "info" });
+        const gameId = await createMemoryGame(name, description, category);
+        subscriber.next({ msg: "Game created successfully!", type: "success" });
 
-    notify("Creating level...", "info");
-    const levelId = await createLevel(gameId);
-    notify("Level created successfully!", "success");
+        subscriber.next({ msg: "Creating level...", type: "info" });
+        const levelId = await createLevel(gameId);
+        subscriber.next({
+          msg: "Level created successfully!",
+          type: "success",
+        });
 
-    notify("Creating screen...", "info");
-    const { error } = await supabase.from("screen").insert([
-      {
-        level_id: levelId,
-        screen_number: 1,
-        instruction: instruction,
-        type: GameTypes.MEMORY,
-      },
-    ]);
-    if (error) throw new Error("Error creating screen.");
-    notify("Screen created!", "success");
+        subscriber.next({ msg: "Creating screen...", type: "info" });
 
-    const screenId = await getScreenId(levelId, 1);
+        const screenId = await createFirstScreen(
+          levelId,
+          instruction,
+          GameTypes.MEMORY
+        );
 
-    notify("Uploading image pairs...", "info");
-    await addScreenOptions(screenId, pairImages);
-    notify("Images added!", "success");
+        subscriber.next({ msg: "Screen created!", type: "success" });
 
-    return true;
-  } catch (err: any) {
-    notify(err.message || "An error occurred", "error");
-    return false;
-  }
+        subscriber.next({ msg: "Uploading image pairs...", type: "info" });
+        await addScreenOptions(screenId, pairImages);
+        subscriber.next({ msg: "Images added!", type: "success" });
+
+        subscriber.complete();
+      } catch (err: any) {
+        subscriber.error(err);
+      }
+    })();
+
+    return () => {
+    };
+  });
 };
 
+const createFirstScreen = async (
+  levelId: string,
+  instruction: string,
+  type: GameTypes
+) => {
+  const { error } = await supabase.from("screen").insert([
+    {
+      level_id: levelId,
+      screen_number: 1,
+      instruction: instruction,
+      type: type,
+    },
+  ]);
+  if (error) throw new Error("Error creating screen.");
+  console.log("Screen created successfully");
+
+  const screenId = await getScreenId(levelId, 1);
+
+  return screenId;
+};
 
 const createMemoryGame = async (
   name: string,
   description: string,
   category: string
 ) => {
-
-  const educatorId = JSON.parse(localStorage.getItem("userId") ?? "null");
+  const educatorId = localStorage.getItem("userId") ?? null;
 
   console.log("Creating memory game with name:", name);
   const { error } = await supabase.from("game").insert([
@@ -229,7 +251,7 @@ const createMemoryGame = async (
       description,
     },
   ]);
-if (error) throw new Error("Error creating game");
+  if (error) throw new Error("Error creating game");
   console.log("Game created successfully with name:", name);
   const { data } = await supabase
     .from("game")
