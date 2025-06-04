@@ -3,11 +3,32 @@
   "description": "This is a multilingual application.",
   "app_name": "Arc-en-jeu",
 
-  "about": {
+  "about_page": {
     "button": "About",
-    "title": "About Us",
-    "description": "We are a team dedicated to creating educational games for children, especially those with special needs."
+    "title": "About our platform",
+    "intro": "Welcome to our personalized game creation platform designed for educators, therapists, and families of autistic children. This platform is part of a broader vision — to provide caregivers with adapted tools to create sensory and educational games tailored to each child's unique needs.",
+    "supported_languages": "With support for Arabic, French, and English, our tools allow you to create new memory or multiple-choice games or enhance existing ones by adding new levels and screens.",
+    "why": "Why we created this platform",
+    "vision": "We are a group of four passionate software engineering students, driven by a desire to make a real impact. With the valuable guidance of our mentor Madame Lilia and the expertise of child therapist Mr. Mehdi, we were able to bring this vision to life.",
+    "thanks": "A big thank you to them for their trust, patience, and constant encouragement.",
+    "meet_dream_team": "Meet our Dream Team"
   },
+
+  "game_type_card": {
+    "add_game": {
+      "label": "Create a new memory game",
+      "description": "Start by entering the name, description, instruction, category, and number of pairs. Then confirm the pairs to automatically create the game, the first level (Level 1), the first screen (Screen 1), and its options."
+    },
+    "add_level": {
+      "label": "Add a level to an existing memory game",
+      "description": "Choose an existing game, enter the instruction, and add the image pairs. A new level will be automatically created with a screen (Screen 1) and its options."
+    },
+    "add_screen": {
+      "label": "Add a screen to an existing memory game",
+      "description": "Choose an existing game, enter the instruction and image pairs. A new screen will be automatically added to the most recent level of this game with its options."
+    }
+  },
+
   "auth": {
     "login": "Login",
     "login_error": "An error occurred during login.",
@@ -15,34 +36,38 @@
     "sign_up": "Sign Up",
     "email": "Email",
     "password": "Password",
-    "password_error": "The password must be at least 6 characters long.",
+    "password_error": "Password must be at least 6 characters.",
     "passwords_mismatch": "Passwords do not match.",
-    "confirm_password": "Confirm Password",
-    "forgot_password": "Forgot Password?",
-    "reset_password": "Reset Password",
-    "send_reset_link": "Send Reset Link",
-    "title": "Create games for children",
+    "confirm_password": "Confirm password",
+    "forgot_password": "Forgot password?",
+    "reset_password": "Reset password",
+    "send_reset_link": "Send reset link",
+    "title": "Time to create games!",
+
     "dont_have_account": "Don't have an account?",
     "already_have_account": "Already have an account?",
-    "username_error": "Username must be at least 4 characters long.",
+    "username_error": "Username must be at least 4 characters.",
     "username": "Username",
-    "become_educator": "Become an Educator"
+    "become_educator": "Join our educator community"
   },
 
   "home": {
     "title": "Let's start creating games!"
   },
+
   "landing_page": {
-    "title": "Welcome to the Game Creation Platform",
-    "description": "Create educational and autism-friendly games in different languages.",
-    "get_started": "Learn more"
+    "title": "Welcome to Arc-en-jeu",
+    "subtitle": "Designed for teachers, therapists, and passionate educators who believe in the power of personalized play.",
+    "description": "Arc-en-jeu allows you to create sensory educational games adapted to autistic children. With our mobile app and intuitive web platform, you can design personalized memory games and quizzes with specific instructions, flexible options, and full support in French, English, and Arabic. You can also enhance existing games by adding new levels or screens for a unique, inclusive, and playful learning experience.",
+    "get_started": "Get started now"
   },
+
   "games": {
     "memory": {
       "create_custom_memory_game": "Create a custom memory game",
       "create_custom_memory_game_level": "Create a new screen in a new level of a custom memory game",
-      "create_custom_memory_game_screen": "Create a new screen for a custom memory game",
-      "configure_game_and_have_fun": "Set up the game settings, add image pairs, and have fun with the kids!",
+      "create_custom_memory_game_screen": "Create a new screen of a custom memory game",
+      "configure_game_and_have_fun": "Configure the game settings, add image pairs, and have fun with the children!",
       "game_name_french": "Game name in French",
       "game_name_english": "Game name in English",
       "game_name_arabic": "Game name in Arabic",
@@ -55,31 +80,34 @@
       "select_game_placeholder": "-- Select an existing game --",
       "number_of_pairs": "Number of image pairs to match",
       "number_of_pairs_placeholder": "Enter a number between 2 and 20",
-      "instruction_french": "Instruction to show in French",
-      "instruction_english": "Instruction to show in English",
-      "instruction_arabic": "Instruction to show in Arabic",
+      "instruction_french": "Instruction in French",
+      "instruction_english": "Instruction in English",
+      "instruction_arabic": "Instruction in Arabic",
       "enter_pairs": "Enter the pairs"
     },
-    "add_level": "Add a level",
-    "add_screen": "Add a screen",
-    "add_game": "Add a game",
+    "add_level": "Add level",
+    "add_screen": "Add screen",
+    "add_game": "Add game",
     "or": "or",
     "to_existing_game": "to an existing game",
     "you_can_also": "You can also"
   },
+
   "buttons": {
     "back": "Back",
     "next": "Next",
     "save": "Save",
     "cancel": "Cancel"
   },
+
   "errors": {
     "invalid_pair_number": "The number of pairs must be between 2 and 20.",
     "missing_fields": "Please fill in all fields.",
-    "missing_images": "Please add all images for the pairs."
+    "missing_images": "Please add all pair images."
   },
+
   "success": {
-    "configured": "The game is successfully configured!",
+    "configured": "Game successfully configured!",
     "added": "Successfully added!"
   }
 }
