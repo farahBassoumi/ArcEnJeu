@@ -1,20 +1,21 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import person4 from "../assets/images/yellow.avif";
-import person1 from "../assets/images/yellow.avif";
-import person2 from "../assets/images/yellow.avif";
-import person3 from "../assets/images/yellow.avif";
+import younes from "../assets/icons/younes.png";
+import farah from "../assets/icons/farah.png";
+import salma from "../assets/icons/salma.png";
+import chadha from "../assets/icons/chadha.png";
+
 import line from "../assets/icons/line.json";
 
 import Lottie from "lottie-react";
-import './LandingPage.css';
+import "./LandingPage.css";
 
 const teamMembers = [
-  { name: "Team Member 1", img: person1 },
-  { name: "Team Member 2", img: person2 },
-  { name: "Team Member 3", img: person3 },
-  { name: "Team Member 4", img: person4 },
+  { name: "Chadha Essid", img: chadha },
+  { name: "Younes Makhlouf", img: younes },
+  { name: "Selma Bouabidi", img: salma },
+  { name: "Farah Bassoumi", img: farah },
 ];
 
 const AboutPage: React.FC = () => {
@@ -23,8 +24,7 @@ const AboutPage: React.FC = () => {
   return (
     <div className="bg-(--color-beige)  px-[40px]">
       <div className="max-w-[1200px] mx-auto space-y-[40px]">
-       <div className="relative">
-        
+        <div className="relative">
           <h1 className="text-[40px] font-bold text-(--color-main)">
             {t("about_page.title", "About Our Platform")}
           </h1>
@@ -53,12 +53,15 @@ const AboutPage: React.FC = () => {
             )}
           </p>
           <p className="text-[15px] italic text-gray-500 mt-2">
-            {t("about_page.thanks", "Big thanks to them for their trust, patience, and constant encouragement.")}
+            {t(
+              "about_page.thanks",
+              "Big thanks to them for their trust, patience, and constant encouragement."
+            )}
           </p>
         </div>
 
         <div>
-            <div className=" overflow-visible">
+          <div className=" overflow-visible">
             <Lottie
               animationData={line}
               loop={true}

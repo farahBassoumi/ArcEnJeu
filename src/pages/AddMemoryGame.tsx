@@ -118,7 +118,7 @@ const AddMemoryGame = ({}: {}) => {
       },
       complete: () => {
         toast.dismiss(toastId);
-        toast.success(t("success.game_added"));
+        toast.success(t("success.added"));
         handleBack();
       },
     });
