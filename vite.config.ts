@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-    base: '/ArcEnJeu/', 
+   // base: '/ArcEnJeu/pfa-front/', 
 
   plugins: [react(), tailwindcss()],
 });

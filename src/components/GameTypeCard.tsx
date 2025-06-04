@@ -15,7 +15,7 @@ export const GameTypeCard = ({ labelKey, descriptionKey, onClick }: GameTypeCard
 
   return (
     <div
-      className="w-full max-w-[400px] h-[300px] p-[20px] hover:scale-105 transition-transform duration-300 cursor-pointer flex flex-col items-center justify-center gap-[10px] rounded-[30px] bg-(--color-main-light) hover:bg-(--color-main) shadow hover:shadow-lg text-center"
+      className="w-full max-w-[400px] h-[300px] p-[20px] hover:scale-105 transition-transform duration-300 cursor-pointer flex flex-col items-center justify-center gap-[10px] rounded-[30px] bg-(--color-main-light) hover:bg-(--color-main-li) shadow hover:shadow-lg text-center"
       onClick={onClick}
       onMouseEnter={() => lottieRef.current?.play()}
       onMouseLeave={() => lottieRef.current?.stop()}

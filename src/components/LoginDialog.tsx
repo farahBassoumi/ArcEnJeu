@@ -14,9 +14,8 @@ interface LoginDialogFormData {
 
 const LoginDialog: React.FC = () => {
   const [formData, setFormData] = useState<LoginDialogFormData>({
-    //TODO: remove this default email and password
-    email: "bassoumifaraah@gmail.com",
-    password: "111111",
+    email: "",
+    password: "",
   });
   const modalRef = useRef<HTMLDivElement>(null);
   const { contextLogin } = useUser();
