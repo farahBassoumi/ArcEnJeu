@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import  { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import turning from "../assets/icons/wink.json";
 import Lottie, { type LottieRefCurrentProps } from "lottie-react";

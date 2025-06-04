@@ -8,7 +8,6 @@ import person3 from "../assets/images/yellow.avif";
 import line from "../assets/icons/line.json";
 
 import Lottie from "lottie-react";
-import sparkles from "../assets/icons/sparkles.json";
 import './LandingPage.css';
 
 const teamMembers = [

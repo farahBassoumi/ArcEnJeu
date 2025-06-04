@@ -1,7 +1,5 @@
 import React, { useRef } from "react";
-import guy from "../assets/images/guy.svg";
 import looking from "../assets/images/looking.jpg";
-import yellow from "../assets/images/yellow.avif";
 import { useTranslation } from "react-i18next";
 import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import sparkles from "../assets/icons/sparkles.json";
