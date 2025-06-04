@@ -3,7 +3,7 @@ name: Deploy Vite App to GitHub Pages
 on:
   push:
     branches:
-      - main # or master, depending on your default branch
+      - main
 
 jobs:
   deploy:
@@ -19,13 +19,15 @@ jobs:
           node-version: 18
 
       - name: Install dependencies 📦
+        working-directory: ./pfa-front
         run: npm ci
 
       - name: Build 🔧
+        working-directory: ./pfa-front
         run: npm run build
 
       - name: Deploy to GitHub Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./pfa-front/dist
