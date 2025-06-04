@@ -3,6 +3,10 @@ import { signUp } from "../services/authentication.services";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { AuthError } from "@supabase/supabase-js";
+import { useTranslation } from "react-i18next";
+import dots from "../assets/icons/dots.json";
+import type { LottieRefCurrentProps } from "lottie-react";
+import Lottie from "lottie-react";
 
 interface SignUpDialogFormData {
   username: string;
@@ -18,6 +22,7 @@ const SignUpDialog: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
+  const { t } = useTranslation();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
@@ -27,22 +32,23 @@ const SignUpDialog: React.FC = () => {
     setError("");
     setSuccess("");
   };
+  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
+      setError(t("auth.passwords_mismatch"));
       return;
     }
     if (formData.password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      setError(t("auth.password_error"));
       return;
     }
     if (formData.username.length < 4) {
-      setError("Le nom d'utilisateur doit contenir au moins 4 caractères.");
+      setError(t("auth.username_error"));
       return;
     }
-    const result = await  signUp(formData.email, formData.password);
+    const result = await signUp(formData.email, formData.password);
     console.log("result", result);
     if (result === null || result instanceof AuthError) {
       const error = result as AuthError;
@@ -74,13 +80,25 @@ const SignUpDialog: React.FC = () => {
           ref={modalRef}
           className="bg-(--color-beige) rounded-[40px]  py-10 px-20 w-[90%] max-w-[500px] shadow-lg relative"
         >
-          <h2 className="text-center text-(--color-gray) text-[28px] font-bold mb-6">
-            Devenir un éducateur
-          </h2>
-
+          <div className="mb-6">
+            <h2 className="text-center text-(--color-gray) text-[25px] font-semibold ">
+              {t("auth.become_educator")}
+            </h2>
+            <div className=" overflow-visible">
+              <Lottie
+                lottieRef={lottieRef}
+                animationData={dots}
+                loop={true}
+                autoplay={true}
+                className="w-[50x] h-[50px]"
+              />
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="text-(--color-gray)">
-              <label className="block  text-sm mb-1">Nom d'utilisateur</label>
+              <label className="block  text-sm mb-1">
+                {t("auth.username")}
+              </label>
               <input
                 type="text"
                 name="username"
@@ -92,7 +110,7 @@ const SignUpDialog: React.FC = () => {
             </div>
 
             <div className="text-(--color-gray)">
-              <label className="block mb-1 text-sm">Email</label>
+              <label className="block mb-1 text-sm">{t("auth.email")}</label>
               <input
                 type="email"
                 name="email"
@@ -104,7 +122,7 @@ const SignUpDialog: React.FC = () => {
             </div>
 
             <div className="text-(--color-gray)">
-              <label className="block mb-1 text-sm">Mot de passe</label>
+              <label className="block mb-1 text-sm">{t("auth.password")}</label>
               <input
                 type="password"
                 name="password"
@@ -117,7 +135,7 @@ const SignUpDialog: React.FC = () => {
 
             <div className="text-(--color-gray)">
               <label className="block  mb-1 text-sm">
-                Confirmer le mot de passe
+                {t("auth.confirm_password")}
               </label>
               <input
                 type="password"
@@ -139,9 +157,9 @@ const SignUpDialog: React.FC = () => {
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
-                className="text-(--color-beige) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center  bg-(--color-main) hover:bg-(--color-hover-main) rounded-full text-[16px]"
+                className="text-(--color-beige) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center  bg-(--color-main) hover:bg-(--color-hover-main) hover:scale-110  transition-transform duration-200    rounded-full text-[16px]"
               >
-                S'inscrire
+                {t("auth.sign_up")}
               </button>
             </div>
             <div className="flex justify-center">
@@ -149,7 +167,7 @@ const SignUpDialog: React.FC = () => {
                 className="text-blue-500 text-sm  mx-1 underline hover:text-blue-700"
                 href="/login"
               >
-                already_has_account?
+                {t("auth.already_have_account")}
               </a>
             </div>
           </form>

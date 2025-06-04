@@ -1,23 +1,93 @@
 {
   "welcome": "Bienvenue",
   "description": "Ceci est une application multilingue.",
+  "app_name": "Arc-en-jeu",
+
+  "about_page": {
+    "button": "À propos",
+
+    "title": "À propos de notre plateforme",
+    "intro": "Bienvenue sur notre plateforme de création de jeux personnalisés destinée aux éducateurs, thérapeutes et familles d'enfants autistes. Cette plateforme s'inscrit dans une vision plus large — celle d'offrir aux accompagnants des outils adaptés pour concevoir des jeux sensoriels et éducatifs correspondant aux besoins uniques de chaque enfant.",
+    "supported_languages": "En prenant en charge l'arabe, le français et l'anglais, nos outils vous permettent de créer de nouveaux jeux de mémoire ou à choix multiples, ou d’enrichir les jeux existants en ajoutant de nouveaux niveaux et écrans.",
+    "why": "Pourquoi avons-nous créé cette plateforme",
+    "vision": "Nous sommes un groupe de quatre étudiants passionnés en ingénierie logicielle, motivés par l’envie d’avoir un impact concret. Grâce aux conseils précieux de notre mentor Madame Lilia et à l’expertise du thérapeute pour enfants Monsieur Mehdi, nous avons pu concrétiser cette vision.",
+    "thanks": "Un grand merci à eux pour leur confiance, leur patience et leurs encouragements constants.",
+    "meet_dream_team": "Découvrez notre Dream Team"
+  },
+  "game_type_card": {
+    "add_game": {
+      "label": "Crée un nouveau jeu de mémoire",
+      "description": "Commencez par entrer le nom, la description, la consigne, la catégorie, et le nombre de paires. Ensuite, validez les paires pour créer automatiquement le jeu, le premier niveau (Niveau 1), le premier écran (Écran 1) et ses options."
+    },
+    "add_level": {
+      "label": "Ajoute un niveau à un jeu de mémoire existant",
+      "description": "Choisissez un jeu existant, entrez la consigne et ajoutez les paires d’images. Un nouveau niveau sera créé automatiquement, contenant un écran (Écran 1) avec les options associées."
+    },
+    "add_screen": {
+      "label": "Ajoute un écran à un jeu de mémoire existant",
+      "description": "Choisissez un jeu existant, entrez la consigne et les paires d’images. Un nouvel écran sera automatiquement ajouté dans le niveau le plus récent de ce jeu, avec ses options."
+    }
+  },
+
+  "auth": {
+    "login": "Connexion",
+    "login_error": "Une erreur s'est produite lors de la connexion.",
+    "logout": "Déconnexion",
+    "sign_up": "S'inscrire",
+    "email": "Email",
+    "password": "Mot de passe",
+    "password_error": "Le mot de passe doit contenir au moins 6 caractères.",
+    "passwords_mismatch": "Les mots de passe ne correspondent pas.",
+    "confirm_password": "Confirmer le mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "reset_password": "Réinitialiser le mot de passe",
+    "send_reset_link": "Envoyer le lien de réinitialisation",
+    "title": "Temps pour créer des jeux !",
+
+    "dont_have_account": "Vous n'avez pas de compte ?",
+    "already_have_account": "Vous avez déjà un compte ?",
+    "username_error": "Le nom d'utilisateur doit contenir au moins 4 caractères.",
+    "username": "Nom d'utilisateur",
+    "become_educator": "Rejoignez notre communauté des éducateurs"
+  },
+  "home": {
+    "title": "Commençons à créer des jeux !"
+  },
+  "landing_page": {
+    "title": "Bienvenue sur Arc-en-jeu",
+    "subtitle": "Conçue pour les enseignants, thérapeutes et éducateurs passionnés qui croient en la puissance du jeu personnalisé.",
+    "description": "Arc-en-jeu vous permet de créer des jeux éducatifs sensoriels adaptés aux enfants autistes. Grâce à notre application mobile et cette plateforme web intuitive, vous pouvez concevoir des jeux de mémoire et des QCM personnalisés, avec des instructions spécifiques, des options flexibles, et un support complet en français, anglais et arabe. Vous pouvez également enrichir les jeux existants en ajoutant de nouveaux niveaux ou écrans, pour une expérience d’apprentissage unique, inclusive et ludique.",
+    "get_started": "Commencez dès maintenant"
+  },
   "games": {
     "memory": {
       "create_custom_memory_game": "Créez un jeu de mémoire personnalisé",
       "create_custom_memory_game_level": "Créez un nouveau ecran dans un nouveau niveau de jeu de mémoire personnalisé",
       "create_custom_memory_game_screen": "Créez un nouveau ecran de jeu de mémoire personnalisé",
       "configure_game_and_have_fun": "Configurez les paramètres du jeu, ajoutez les paires d’images et amusez-vous avec les enfants !",
-      "game_name": "Nom du jeu",
-      "optional_description": "Description (facultative)",
+      "game_name_french": "Nom du jeu en français",
+      "game_name_english": "Nom du jeu en anglais",
+      "game_name_arabic": "Nom du jeu en arabe",
+      "optional_description_french": "Description en français (facultative)",
+      "optional_description_english": "Description en anglais (facultative)",
+      "optional_description_arabic": "Description en arabe (facultative)",
       "select_category": "Choisissez une catégorie pour ce jeu",
       "select_category_placeholder": "-- Sélectionnez une catégorie --",
       "select_game": "Choisissez le jeu auquel vous voulez ajouter l'ecran",
       "select_game_placeholder": "-- Sélectionnez un jeu existant --",
       "number_of_pairs": "Nombre de paires d’images à associer",
       "number_of_pairs_placeholder": "Entrez un nombre entre 2 et 20",
-      "instruction_before_start": "Message que l’enfant verra avant de commencer",
+      "instruction_french": "Instruction à afficher en français",
+      "instruction_english": "Instruction à afficher en anglais",
+      "instruction_arabic": "Instruction à afficher en arabe",
       "enter_pairs": "Entrez les paires"
-    }
+    },
+    "add_level": "Ajouter un niveau",
+    "add_screen": "Ajouter un écran",
+    "add_game": "Ajouter un jeu",
+    "or": "ou",
+    "to_existing_game": "a un jeu deja existant",
+    "you_can_also": "Vous pouvez aussi"
   },
   "buttons": {
     "back": "Retour",

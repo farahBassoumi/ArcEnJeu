@@ -1,36 +1,34 @@
 import React from "react";
-import { GameTypes } from "../types/enums/gameTypes.enum";
 import { GameTypeCard } from "../components/GameTypeCard";
-import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-
-  const handleNavigation = (gameType: GameTypes) => {
-    if (gameType === GameTypes.MEMORY_MATCH) {
-      navigate("/memory-game/add-game");
-    } else if (gameType === GameTypes.MULTIPLE_CHOICE) {
-      navigate("/mcq-game");
-    }
-  };
+const { t } = useTranslation();
+ 
   return (
     <div className=" flex flex-col items-center justify-center p-4">
       <div className="flex flex-col items-center justify-center">
-        <p className="text-lg font-semibold text-(--color-pink) p-[20px] ">
-          Commençons à créer des jeux !
+        <p className="text-[30px] text-(--color-pink) p-[20px] ">
+          {t("home.title")}
         </p>
         <div className="flex flex-row justify-around gap-[50px] py-[20px] ">
           <GameTypeCard
-            label="Jeu de mémoire"
-            description="Créez un jeu pour entraîner la mémoire en choisissants le nombre des pairs en puis en entrant des paires de cardes."
-            onClick={() => handleNavigation(GameTypes.MEMORY_MATCH)}
-          />
-          <GameTypeCard
-            label="QCM"
-            description="Créez un jeu à choix multiples en choisissants le nombre des questions et en entrant les questions et les réponses."
-            onClick={() => handleNavigation(GameTypes.MULTIPLE_CHOICE)}
-          />
+        labelKey="game_type_card.add_game.label"
+        descriptionKey="game_type_card.add_game.description"
+        onClick={() => navigate("/memory-game/add-game")}
+      />
+      <GameTypeCard
+        labelKey="game_type_card.add_level.label"
+        descriptionKey="game_type_card.add_level.description"
+        onClick={() => navigate("/memory-game/add-level")}
+      />
+      <GameTypeCard
+        labelKey="game_type_card.add_screen.label"
+        descriptionKey="game_type_card.add_screen.description"
+        onClick={() => navigate("/memory-game/add-screen")}
+      />
         </div>
       </div>
     </div>

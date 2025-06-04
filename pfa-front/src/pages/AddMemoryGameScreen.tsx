@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ValidateMemoryGame from "../components/ValidateMemoryGame";
 import { toast, Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
 import { addScreen, getMemoryGames } from "../services/game.services";
-import { t } from "i18next";
 import { ImageUploadSection } from "../components/ImageUploadsSection";
 import type { Game } from "../types/game";
-
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n/config";
+import type { LottieRefCurrentProps } from "lottie-react";
+import Lottie from "lottie-react";
+import sparkles from "../assets/icons/startLine.json"; // Adjust the path as necessary
 const AddMemoryGameScreen = ({}: {}) => {
   const [formData, setFormData] = useState({
     numberOfPairs: 0,
-    instruction: "",
+    instructionFrench: "",
+    instructionEnglish: "",
+    instructionArabic: "",
     gameId: "",
   });
   const [pairImages, setPairImages] = useState<(File | null)[]>([]);
@@ -18,6 +23,8 @@ const AddMemoryGameScreen = ({}: {}) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [showValidationStep, setShowValidationStep] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
+  const { t } = useTranslation();
+  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -71,10 +78,8 @@ const AddMemoryGameScreen = ({}: {}) => {
     const numberValid = numberOfPairs >= 2 && numberOfPairs <= 20;
 
     const valid = (numberValid && gameId && imagesAreValid) || false;
-    console.log("formData", formData);
-    console.log("valid", valid);
-    //setIsFormValid(valid);
-    setIsFormValid(true);
+
+    setIsFormValid(valid);
 
     if (!numberValid) {
       setError(t("errors.invalid_pair_number"));
@@ -91,8 +96,6 @@ const AddMemoryGameScreen = ({}: {}) => {
     console.log("inside of the useEffect memory game component");
     setShowValidationStep(false);
     setFormMessages();
-    // if (pairImages.length > 0 && formData.numberOfPairs > 0)
-    //   if (pairImages[0]) addImage(pairImages[0]);
   }, [formData, pairImages]);
 
   const onValidationSubmit = () => {
@@ -127,15 +130,40 @@ const AddMemoryGameScreen = ({}: {}) => {
     return () => subscription.unsubscribe();
   };
 
+  const getGameName = (name: string): string => {
+    try {
+      const parsedName = JSON.parse(name);
+      const lang = i18n.language;
+
+      if (lang.startsWith("fr"))
+        return parsedName.fr || parsedName.en || parsedName.ar || name;
+      if (lang.startsWith("ar"))
+        return parsedName.ar || parsedName.fr || parsedName.en || name;
+      return parsedName.en || parsedName.fr || parsedName.ar || name;
+    } catch (e) {
+      return name;
+    }
+  };
+
   const handleBack = () => {
     setShowValidationStep(false);
   };
+
   return (
-    <div className="w-full max-w-[600px] py-[30px] px-[50px] mt-[40px] flex flex-col items-center justify-center shadow-md  rounded-[30px] bg-(--color-main-light) shadow text-center">
+    <div className="w-full max-w-[800px] py-[30px] px-[50px]  flex flex-col items-center justify-center shadow-md  rounded-[30px] bg-(--color-main-light) shadow text-center">
       <Toaster />
       {!showValidationStep ? (
-        <div className="pt-[40px]">
-          <div className="py-[10px]">
+        <div className="text-[14px] ">
+          <div className="mt-[-30px]">
+            <div className=" mb-[-30px] overflow-visible">
+              <Lottie
+                lottieRef={lottieRef}
+                animationData={sparkles}
+                loop={true}
+                autoplay={true}
+                className="w-[150x] h-[150px]"
+              />
+            </div>
             <h2 className="text-lg text-(--color-gray) font-semibold">
               {t("games.memory.create_custom_memory_game_screen")}
             </h2>
@@ -144,8 +172,8 @@ const AddMemoryGameScreen = ({}: {}) => {
             </p>
           </div>
 
-          <div className="w-full flex flex-col items-center gap-[20px]">
-            <div className="w-full text-left text-[--color-gray]">
+          <div className="w-full flex flex-col items-center pt-[10px] gap-[20px]">
+            <div className="w-full text-left text-(--color-gray)">
               <label className="block mb-1 text-xs ml-[15px]">
                 {t("games.memory.select_game")}
               </label>
@@ -154,14 +182,14 @@ const AddMemoryGameScreen = ({}: {}) => {
                   name="gameId"
                   value={formData.gameId}
                   onChange={handleChange}
-                  className="w-full appearance-none px-4 py-2 pr-10 rounded-[15px] bg-white border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[--color-main]"
+                  className="w-full appearance-none px-4 py-2 pr-10 rounded-[10px] bg-white border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[--color-main]"
                 >
                   <option value="">
                     {t("games.memory.select_game_placeholder")}
                   </option>
                   {games.map((game: Game) => (
                     <option key={game.game_id} value={game.game_id}>
-                      {game.name}
+                      {getGameName(game.name)}
                     </option>
                   ))}
                 </select>
@@ -171,17 +199,46 @@ const AddMemoryGameScreen = ({}: {}) => {
                 </div>
               </div>
             </div>
-            <div className="w-full text-left text-(--color-gray)">
-              <label className="block mb-1 text-xs ml-[15px]">
-                {t("games.memory.prompt_before_start")}
-              </label>
-              <input
-                type="text"
-                name="instruction"
-                value={formData.instruction}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-[15px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"
-              />
+            <div className="flex flex-row justify-between gap-[30px] ">
+              <div className="w-full text-left text-(--color-gray)">
+                <label className="block mb-1 text-xs ml-[15px]">
+                  {t("games.memory.instruction_french")}
+                </label>
+                <input
+                  type="text"
+                  name="instructionFrench"
+                  placeholder=" instruction en français"
+                  value={formData.instructionFrench}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-[10px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"
+                />
+              </div>
+              <div className="w-full text-left text-(--color-gray)">
+                <label className="block mb-1 text-xs ml-[15px]">
+                  {t("games.memory.instruction_english")}
+                </label>
+                <input
+                  type="text"
+                  name="instructionEnglish"
+                  placeholder=" instruction en anglais"
+                  value={formData.instructionEnglish}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-[10px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"
+                />
+              </div>
+              <div className="w-full text-left text-(--color-gray)">
+                <label className="block mb-1 text-xs ml-[15px]">
+                  {t("games.memory.instruction_arabic")}
+                </label>
+                <input
+                  type="text"
+                  name="instructionArabic"
+                  placeholder="تعليمات باللغة العربية"
+                  value={formData.instructionArabic}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-[10px] bg-white focus:outline-none focus:ring-2 focus:ring-(--color-main)"
+                />
+              </div>
             </div>
             <div className="w-full text-left text-[--color-gray]">
               <label className="block mb-1 ml-[15px] text-xs">
@@ -193,7 +250,7 @@ const AddMemoryGameScreen = ({}: {}) => {
                 value={formData.numberOfPairs}
                 onChange={handleChangePairsNbr}
                 placeholder={t("games.memory.number_of_pairs_placeholder")}
-                className="w-full px-4 py-2 rounded-[15px] bg-white border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[--color-main]"
+                className="w-full px-4 py-2 rounded-[10px] bg-white border border-gray-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[--color-main]"
                 required
               />
             </div>
@@ -216,7 +273,7 @@ const AddMemoryGameScreen = ({}: {}) => {
             <div className="flex flex-row justify-center gap-[20px] items-center">
               <button
                 onClick={handleBack}
-                className="text-(--color-beige) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center bg-(--color-gray) rounded-[15px] text-[16px]"
+                className="text-(--color-beige) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center bg-(--color-gray) rounded-[10px] text-[16px]"
               >
                 {t("buttons.back")}
               </button>
@@ -224,7 +281,7 @@ const AddMemoryGameScreen = ({}: {}) => {
               <button
                 onClick={() => setShowValidationStep(true)}
                 disabled={!isFormValid}
-                className={`text-(--color-beige) px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center rounded-[15px] text-[16px] ${
+                className={`text-(--color-beige) px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center rounded-[10px] text-[16px] ${
                   isFormValid
                     ? "bg-(--color-hover-main)"
                     : "bg-gray-300 cursor-not-allowed"
@@ -234,21 +291,22 @@ const AddMemoryGameScreen = ({}: {}) => {
               </button>
             </div>
             <div className="text-sm text-(--color-gray) mt-[20px]">
-              <p>vous pouvez aussi:</p>
+              <p>{t("games.you_can_also")}</p>
               <a
                 className="text-blue-500 mx-1 underline hover:text-blue-700"
                 href="/memory-game/add-game"
               >
-                ajouter un jeu
+                {t("games.add_game")}
               </a>
-              ou
+
+              {t("games.or")}
               <a
                 className="text-blue-500  mx-1 underline hover:text-blue-700"
                 href="/memory-game/add-level"
               >
-                ajouter un level
+                {t("games.add_level")}
               </a>
-              a un jeu deja existant
+              {t("games.to_existing_game")}
             </div>
           </div>
         </div>

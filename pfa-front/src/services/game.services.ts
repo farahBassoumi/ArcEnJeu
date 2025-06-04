@@ -21,7 +21,7 @@ export const addScreen = (
     (async () => {
       try {
         const gameId = formData.gameId;
-
+        const instruction = formInstructionTranslationJson(formData);
         subscriber.next({ msg: "Getting highest level...", type: "info" });
         let levelId = await getHighestLevel(gameId);
         if (!levelId) {
@@ -50,7 +50,7 @@ export const addScreen = (
 
         const screenId = await createScreen(
           levelId.level_id,
-          formData.instruction,
+          instruction,
           screenNumber,
           GameTypes.MEMORY
         );
@@ -82,7 +82,7 @@ export const addNewLevelScreen = (
     (async () => {
       try {
         const gameId = formData.gameId;
-
+        const instruction = formInstructionTranslationJson(formData);
         subscriber.next({ msg: "Creating new level...", type: "info" });
         const levelId = await createLevel(gameId);
         subscriber.next({
@@ -98,7 +98,7 @@ export const addNewLevelScreen = (
           {
             level_id: levelId,
             screen_number: 1,
-            instruction: formData.instruction,
+            instruction: instruction,
             type: GameTypes.MEMORY,
           },
         ]);
@@ -129,10 +129,12 @@ export const addNewMemoryGame = (
   pairImages: File[]
 ): Observable<{ msg: string; type: "info" | "success" | "error" }> => {
   return new Observable((subscriber) => {
-    const { name, description, category, instruction } = formData;
+    const { category } = formData;
+    const { name, description, instruction } = formTranslationJson(formData);
 
     (async () => {
       try {
+        console.log("Creating memory game with name:", name);
         subscriber.next({ msg: "Creating game...", type: "info" });
         const gameId = await createMemoryGame(name, description, category);
         subscriber.next({ msg: "Game created successfully!", type: "success" });
@@ -170,7 +172,49 @@ export const addNewMemoryGame = (
 };
 
 //utility functions
+const formInstructionTranslationJson = (formData: any) => {
+  const { instructionFrench, instructionEnglish, instructionArabic } = formData;
+  const instructionTranslation = {
+    fr: instructionFrench,
+    en: instructionEnglish,
+    ar: instructionArabic,
+  };
+  return JSON.stringify(instructionTranslation);
+};
 
+const formTranslationJson = (formData: any) => {
+  const {
+    nameFrench,
+    nameEnglish,
+    nameArabic,
+    descriptionFrench,
+    descriptionEnglish,
+    descriptionArabic,
+    instructionFrench,
+    instructionEnglish,
+    instructionArabic,
+  } = formData;
+  const name = {
+    fr: nameFrench,
+    en: nameEnglish,
+    ar: nameArabic,
+  };
+  const descriptionTranslation = {
+    fr: descriptionFrench,
+    en: descriptionEnglish,
+    ar: descriptionArabic,
+  };
+  const instructionTranslation = {
+    fr: instructionFrench,
+    en: instructionEnglish,
+    ar: instructionArabic,
+  };
+  return {
+    name: JSON.stringify(name),
+    description: JSON.stringify(descriptionTranslation),
+    instruction: JSON.stringify(instructionTranslation),
+  };
+};
 const getScreenId = async (levelId: string, screenNumber: number) => {
   const { data, error } = await supabase
     .from("screen")

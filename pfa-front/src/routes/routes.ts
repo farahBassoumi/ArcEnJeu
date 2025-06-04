@@ -9,6 +9,7 @@ export const PUBLIC_ROUTES = {
   LandingPage: '/',
   Login: '/login',
   SignUp: '/signup',
+  About: '/about',
 };
 
 export const ROUTES = {

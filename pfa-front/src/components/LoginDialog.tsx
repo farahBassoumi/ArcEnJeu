@@ -4,7 +4,9 @@ import { ROUTES } from "../routes/routes";
 import { login } from "../services/authentication.services";
 import { AuthError } from "@supabase/supabase-js";
 import { useUser } from "../utils/UserContext";
-
+import { useTranslation } from "react-i18next";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
+import dots from "../assets/icons/dots.json";
 interface LoginDialogFormData {
   email: string;
   password: string;
@@ -20,17 +22,18 @@ const LoginDialog: React.FC = () => {
   const { contextLogin } = useUser();
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
+  const lottieRef = useRef<LottieRefCurrentProps | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.password.length < 4) {
-      setError("Le mot de passe doit contenir au moins 4 caractères.");
+      setError(t("auth.password_error"));
       return;
     }
 
@@ -39,17 +42,15 @@ const LoginDialog: React.FC = () => {
       const error = result as AuthError;
 
       if (error.message !== null) setError(error.message);
-      else setError("Une erreur s'est produite lors de la connexion.");
+      else setError(t("auth.login_error"));
       return;
     }
-    console.log("Login successful:", result);
     contextLogin(result.user.id);
     navigate(ROUTES.Home);
   };
 
   const handleClickOutside = (e: MouseEvent) => {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      console.log("Clicked outside modal");
       navigate(ROUTES.LandingPage);
     }
   };
@@ -68,13 +69,25 @@ const LoginDialog: React.FC = () => {
           ref={modalRef}
           className="bg-(--color-beige) rounded-[40px] py-6 px-17 w-full max-w-[500px] shadow-lg relative"
         >
-          <h2 className="text-center text-(--color-gray) text-[28px] font-semibold mb-6">
-            Créez des jeux pour les enfants
-          </h2>
+          <div className="mb-6">
+            {" "}
+            <h2 className="text-center text-(--color-gray) text-[28px] font-semibold ">
+              {t("auth.title")}
+            </h2>
+            <div className=" overflow-visible">
+              <Lottie
+                lottieRef={lottieRef}
+                animationData={dots}
+                loop={true}
+                autoplay={true}
+                className="w-[50x] h-[50px]"
+              />
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="text-(--color-gray)">
-              <label className="block mb-1 text-sm">Email</label>
+              <label className="block mb-1 text-sm">{t("auth.email")}</label>
               <input
                 type="email"
                 name="email"
@@ -86,7 +99,8 @@ const LoginDialog: React.FC = () => {
             </div>
 
             <div className="text-(--color-gray)">
-              <label className="block mb-1 text-sm">Mot de passe</label>
+              <label className="block mb-1 text-sm">{t("auth.password")}</label>
+
               <input
                 type="password"
                 name="password"
@@ -102,9 +116,9 @@ const LoginDialog: React.FC = () => {
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
-                className="text-(--color-beige) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center bg-(--color-main) hover:bg-(--color-hover-main) rounded-full text-[16px]"
+                className=" hover:scale-110  transition-transform duration-200   text-(--color-beige) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[150px] w-full flex items-center justify-center bg-(--color-main) hover:bg-(--color-hover-main) rounded-full text-[16px]"
               >
-                Connection
+                {t("auth.login")}
               </button>
             </div>
             <div className="flex justify-center">
@@ -112,7 +126,7 @@ const LoginDialog: React.FC = () => {
                 className="text-blue-500 text-sm  mx-1 underline hover:text-blue-700"
                 href="/signup"
               >
-                dont_have_account?
+                {t("auth.dont_have_account")}
               </a>
             </div>
           </form>

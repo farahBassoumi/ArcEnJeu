@@ -1,4 +1,85 @@
 {
   "welcome": "Welcome",
-  "description": "This is a multi-language app."
+  "description": "This is a multilingual application.",
+  "app_name": "Arc-en-jeu",
+
+  "about": {
+    "button": "About",
+    "title": "About Us",
+    "description": "We are a team dedicated to creating educational games for children, especially those with special needs."
+  },
+  "auth": {
+    "login": "Login",
+    "login_error": "An error occurred during login.",
+    "logout": "Logout",
+    "sign_up": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "password_error": "The password must be at least 6 characters long.",
+    "passwords_mismatch": "Passwords do not match.",
+    "confirm_password": "Confirm Password",
+    "forgot_password": "Forgot Password?",
+    "reset_password": "Reset Password",
+    "send_reset_link": "Send Reset Link",
+    "title": "Create games for children",
+    "dont_have_account": "Don't have an account?",
+    "already_have_account": "Already have an account?",
+    "username_error": "Username must be at least 4 characters long.",
+    "username": "Username",
+    "become_educator": "Become an Educator"
+  },
+
+  "home": {
+    "title": "Let's start creating games!"
+  },
+  "landing_page": {
+    "title": "Welcome to the Game Creation Platform",
+    "description": "Create educational and autism-friendly games in different languages.",
+    "get_started": "Learn more"
+  },
+  "games": {
+    "memory": {
+      "create_custom_memory_game": "Create a custom memory game",
+      "create_custom_memory_game_level": "Create a new screen in a new level of a custom memory game",
+      "create_custom_memory_game_screen": "Create a new screen for a custom memory game",
+      "configure_game_and_have_fun": "Set up the game settings, add image pairs, and have fun with the kids!",
+      "game_name_french": "Game name in French",
+      "game_name_english": "Game name in English",
+      "game_name_arabic": "Game name in Arabic",
+      "optional_description_french": "Description in French (optional)",
+      "optional_description_english": "Description in English (optional)",
+      "optional_description_arabic": "Description in Arabic (optional)",
+      "select_category": "Choose a category for this game",
+      "select_category_placeholder": "-- Select a category --",
+      "select_game": "Choose the game you want to add the screen to",
+      "select_game_placeholder": "-- Select an existing game --",
+      "number_of_pairs": "Number of image pairs to match",
+      "number_of_pairs_placeholder": "Enter a number between 2 and 20",
+      "instruction_french": "Instruction to show in French",
+      "instruction_english": "Instruction to show in English",
+      "instruction_arabic": "Instruction to show in Arabic",
+      "enter_pairs": "Enter the pairs"
+    },
+    "add_level": "Add a level",
+    "add_screen": "Add a screen",
+    "add_game": "Add a game",
+    "or": "or",
+    "to_existing_game": "to an existing game",
+    "you_can_also": "You can also"
+  },
+  "buttons": {
+    "back": "Back",
+    "next": "Next",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "invalid_pair_number": "The number of pairs must be between 2 and 20.",
+    "missing_fields": "Please fill in all fields.",
+    "missing_images": "Please add all images for the pairs."
+  },
+  "success": {
+    "configured": "The game is successfully configured!",
+    "added": "Successfully added!"
+  }
 }

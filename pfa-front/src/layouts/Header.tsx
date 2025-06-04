@@ -1,26 +1,40 @@
-import React, { useEffect } from "react";
-import Logo from "../assets/icons/Logo.svg";
+import React, { useEffect, useState } from "react";
+import stars from "../assets/icons/stars.png";
 import Translation from "../assets/icons/Translation.svg";
 import { useNavigate } from "react-router-dom";
 import i18n from "../i18n/config";
 import ArrowRight from "../assets/icons/ArrowRight.svg";
 import { useUser } from "../utils/UserContext";
+import { useTranslation } from "react-i18next";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const { isLoggedIn, contextLogout } = useUser();
-
+  const [language, setLanguage] = useState<string>( );
+  const { t } = useTranslation();
   useEffect(() => {
     console.log("Checking user login status...");
     const userId = localStorage.getItem("userId");
     console.log(`User ID from localStorage: ${userId}`);
     console.log(`Is user logged in? ${!!userId}`);
   }, []);
+  useEffect(() => {
+    const currentLanguage = i18n.language;
+    if (currentLanguage === "ar") setLanguage("العربية");
+    else if (currentLanguage === "fr") setLanguage("français");
+    else setLanguage("english");
+  }, []);
 
   const onChangeLanguage = () => {
-    const newLanguage = i18n.language === "en" ? "fr" : "en";
-    console.log(`Changing language to ${newLanguage}`);
+    const languages = ["fr", "en", "ar"];
+    const currentIndex = languages.indexOf(i18n.language);
+    const nextIndex = (currentIndex + 1) % languages.length;
+    const newLanguage = languages[nextIndex];
+    if (newLanguage === "ar") setLanguage("العربية");
+    else if (newLanguage === "fr") setLanguage("français");
+    else setLanguage("english");
 
+    console.log(`Changing language to ${newLanguage}`);
     i18n.changeLanguage(newLanguage);
   };
 
@@ -29,37 +43,49 @@ const Header: React.FC = () => {
     navigate("/");
   };
 
+  const handleLogoClick = () => {
+    if (isLoggedIn) navigate("/home");
+    else navigate("/");
+  };
+
   return (
-    <div className="flex flex-row justify-between items-center py-[10px] px-[50px] bg-(--color-main)">
+    <div className="flex flex-row justify-between items-center py-[5px] px-[50px] bg-(--color-main)">
       <div
-        onClick={() => navigate("/")}
+        onClick={handleLogoClick}
         className=" cursor-pointer flex flex-row items-center gap-[10px] text-(--color-beige)"
       >
-        <div className=" flex items-center justify-center p-[4px] size-[30px] ">
-          <img src={Logo} alt="" />
+        <div className=" flex items-center justify-center size-[50px] ">
+          <img src={stars} alt="" />
         </div>
-        <div>Cerveau Doux </div>
+        <div className=" px-2 text-[18px]" >
+          {t("app_name")}
+
+        </div>
       </div>
       <div className="flex flex-row items-center gap-[20px]">
-        <button className="bg-transparent text-(--color-beige) cursor-pointer">
-          à propos
+        <button onClick={
+          () => {
+            navigate("/about");
+          }
+        } className="bg-transparent text-(--color-beige) cursor-pointer">
+          {t("about_page.button")}
         </button>
         <div className="authentication flex flex-row items-center gap-[15px]">
-          {(! isLoggedIn) ? (
-            <div className="flex flex-row items-center gap-[10px]">
+          {!isLoggedIn ? (
+            <div className="flex text-(--color-gray) flex-row text-[14px] items-center gap-[10px]">
               <button
-                className="text-(--color-gray) cursor-pointer px-6 py-2 max-h-[40px] h-full max-w-[300px] w-full flex items-center justify-center bg-(--color-beige) text-[#242424] rounded-full"
+                className=" hover:scale-105  transition-transform duration-200   cursor-pointer px-6 py-2 max-h-[40px] h-full w-200px] flex items-center justify-center bg-(--color-beige)  rounded-[20px]"
                 onClick={() => navigate("/login")}
               >
-                Connexion
+                {t("auth.login")}
               </button>
               <button
                 onClick={() => navigate("/signup")}
-                className="  text-(--color-gray) cursor-pointer px-4  py-2  max-h-[40px]  max-w-[300px] w-full flex items-center justify-center bg-(--color-beige) text-[#242424] rounded-full"
+                className=" hover:scale-105  transition-transform duration-200    cursor-pointer px-6  py-2  max-h-[40px]  w-200px]  flex items-center justify-center bg-(--color-beige)  rounded-[20px]"
               >
-                <div>Inscription</div>
+                <div>{t("auth.sign_up")}</div>
                 <div>
-                  <div className="flex items-center justify-center size-[20px] mt-[5px] ">
+                  <div className="flex items-center justify-center size-[20px]  ml-[5px] mt-[2px] ">
                     <img src={ArrowRight} alt="" />
                   </div>
                 </div>
@@ -68,14 +94,18 @@ const Header: React.FC = () => {
           ) : (
             <button
               onClick={handleLogout}
-              className="  text-(--color-gray) cursor-pointer px-4  py-2  max-h-[40px]  max-w-[300px] w-full flex items-center justify-center bg-(--color-beige) text-[#242424] rounded-full"
+              className=" hover:scale-105  text-(--color-gray) text-[14px]  transition-transform duration-200    cursor-pointer px-4  py-2  max-h-[40px]  max-w-[300px] w-full flex items-center justify-center bg-(--color-beige)  rounded-[20px]"
             >
-              <div>log out</div>
+              <div> 
+                {t("auth.logout")}
+
+              </div>
             </button>
           )}
 
-          <div className="cursor-pointer w-[30px] " onClick={onChangeLanguage}>
-            <img className="h-full w-full " src={Translation} alt="" />
+          <div className="cursor-pointer flex flex-col w-[30px] items-center justify-center hover:scale-110  transition-transform duration-200   " onClick={onChangeLanguage}>
+            <img className="h-full w-full mb-[-5px] " src={Translation} alt="" />
+            <span className=" text-(--color-beige) font-semibold  text-[10px]">{language}</span>
           </div>
         </div>
       </div>
